@@ -1,0 +1,69 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# subsamplePhyloseq
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+This package allows for the **repeated subsampling** of an existing phyloseq object as described in [Schloss 2023](https://www.biorxiv.org/content/10.1101/2023.06.23.546312v1) and the averaging of common alpha- and beta-diversity metrics across the subsamples (i.e., perform rarefaction). The repeated subsampling/rarefaction provides an approach to control for uneven sequencing effort for the alpha- and beta-diversity metrics returned. A list of subsampled phyloseq objects is also returned allowing for additional metrics to be computed and averaged across the subsamples as required. Parallel computation is implemented using the doParallel and foreach packages.
+
+## Installation
+
+You can install the development version of subsamplePhyloseq from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("Nick243/subsamplePhyloseq")
+```
+
+## Example
+
+This basic example highlights the core functionality of the subsamplePhyloseq package. First, an example phyloseq object is obtained from the phyloseq package. Then the subsample_phyloseq() function is run to perform the repeated subsampling and averaging of diversity metrics. Finally, an example ordination is performed on the average Bray_Curtis dissimilarity.  
+
+Larger values for the depth of subsampling and number of repeats should be used when analyzing data from an actual experiment.    
+
+Run parallel::detectCores() to determine the number of available cores. For projects with a large number of samples or library sizes consider using using parallel::detectCores() - 1. 
+
+```{r example}
+library(subsamplePhyloseq)
+library(phyloseq)
+library(ggplot2)
+
+#Create example data
+data("GlobalPatterns")
+ps <- phyloseq::subset_samples(GlobalPatterns, SampleType %in% c("Feces", "Skin"))
+ps <- phyloseq::subset_taxa(ps, phyloseq::taxa_sums(ps) > 0)
+
+x <- phyloseq::taxa_sums(ps)
+keepTaxa <- (x / sum(x)) > 1e-3
+ps <- phyloseq::prune_taxa(keepTaxa, ps)
+
+
+#Repeatedly subsample phyloseq object
+rep_ps <- subsample_phyloseq(ps_object = ps, repeats = 2, depth = 10000, n_cores = 2)
+rep_ps
+
+#Generate example ordination
+my_pcoa <- cmdscale(rep_ps$bray_curtis, eig = TRUE)
+lab1 <- paste0("Axis.1  [", round(100 * my_pcoa$eig[1]/sum(my_pcoa$eig), 1), "%]")
+lab2 <- paste0("Axis.2  [", round(100 * my_pcoa$eig[2]/sum(my_pcoa$eig), 1), "%]")
+
+plot_ordination(ps, my_pcoa, type = "samples", color = "SampleType") +
+    labs(x = lab1, y = lab2) +
+    geom_point(size = 3)
+```
+
+
