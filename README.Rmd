@@ -42,6 +42,7 @@ library(subsamplePhyloseq)
 library(phyloseq)
 library(ggplot2)
 
+
 #Create example data
 data("GlobalPatterns")
 ps <- phyloseq::subset_samples(GlobalPatterns, SampleType %in% c("Feces", "Skin"))
@@ -55,6 +56,7 @@ ps <- phyloseq::prune_taxa(keepTaxa, ps)
 #Repeatedly subsample phyloseq object
 rep_ps <- subsample_phyloseq(ps_object = ps, repeats = 2, depth = 10000, n_cores = 2)
 rep_ps
+
 
 #Generate example ordination
 my_pcoa <- cmdscale(rep_ps$bray_curtis, eig = TRUE)
