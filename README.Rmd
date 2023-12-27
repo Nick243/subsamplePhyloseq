@@ -31,13 +31,13 @@ devtools::install_github("Nick243/subsamplePhyloseq")
 
 ## Example
 
-This basic example highlights the core functionality of the subsamplePhyloseq package. First, an example phyloseq object is obtained from the phyloseq package. Then the subsample_phyloseq() function is run to perform the repeated subsampling and averaging of diversity metrics. Finally, an example ordination is performed on the average Bray_Curtis dissimilarity.  
+This basic example highlights the core functionality of the subsamplePhyloseq package. First, an example phyloseq object is obtained from the phyloseq package. Then the subsample_phyloseq() function is run to perform the repeated subsampling and averaging of diversity metrics. Finally, an example ordination is performed on the average Bray-Curtis dissimilarity.  
 
 Larger values for the depth of subsampling and number of repeats should be used when analyzing data from an actual experiment.    
 
 Run parallel::detectCores() to determine the number of available cores. For projects with a large number of samples or library sizes consider using using parallel::detectCores() - 1. 
 
-```{r example}
+```{r example, warning=FALSE}
 library(subsamplePhyloseq)
 library(phyloseq)
 library(ggplot2)
